@@ -34,7 +34,7 @@ router.get("/comment/:id", (req, res) => {
   }
 });
 
-router.post("/commentAll", (req, res) => {
+router.post("/comment", (req, res) => {
   let comments = loadComments();
   const data = req.body;
   if (data.comment == "") {
