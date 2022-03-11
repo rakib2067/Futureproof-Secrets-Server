@@ -41,7 +41,7 @@ class Post {
 
       return newPost;
     }
-    // Create new Posts
+    // Create new Post
     for (let obj of buffer) {
       count++;
     }
