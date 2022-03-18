@@ -13,14 +13,29 @@ describe("server testing", () => {
     emo1: 0,
     emo2: 0,
     emo3: 0,
+    comment: [],
+  };
+  let testPost2 = {
+    id: 2,
+    title: "Test2",
+    content: "Hello2",
+    giphy: "https://www.google.com/",
+    emo1: 0,
+    emo2: 0,
+    emo3: 0,
+    comment: [],
   };
   let testComment = {
     id: 1,
-    comment: "Test Comment",
+    comment: { datetime: "10/3/2022 - 18:9:6", input: "Hello" },
   };
   let testComment2 = {
     id: 1,
-    comment: "Test Comment2",
+    comment: { datetime: "10/3/2022 - 18:9:6", input: "Hello2" },
+  };
+  let testEmojiData = {
+    id: 1,
+    emo: "emo1",
   };
 
   beforeAll(() => {
@@ -38,10 +53,6 @@ describe("server testing", () => {
     request(testapp).get("/").expect(200, done);
   });
 
-  it("get post comments by id res with 404(not exist)", (done) => {
-    request(testapp).get("/comment/999").expect(404, done);
-  });
-
   it("responds to post /create with status 201", (done) => {
     request(testapp)
       .post("/create")
@@ -57,6 +68,27 @@ describe("server testing", () => {
           emo1: 0,
           emo2: 0,
           emo3: 0,
+          comment: [],
+        },
+        done
+      );
+  });
+  it("responds to post /create for a second post with status 201", (done) => {
+    request(testapp)
+      .post("/create")
+      .send(testPost2)
+      .set("Accept", "application/json")
+      .expect(201)
+      .expect(
+        {
+          id: 2,
+          title: "Test2",
+          content: "Hello2",
+          giphy: "https://www.google.com/",
+          emo1: 0,
+          emo2: 0,
+          emo3: 0,
+          comment: [],
         },
         done
       );
@@ -71,7 +103,13 @@ describe("server testing", () => {
       .expect(
         {
           id: 1,
-          comment: { cmt1: "Test Comment" },
+          title: "Test",
+          content: "Hello",
+          giphy: "https://www.google.com/",
+          emo1: 0,
+          emo2: 0,
+          emo3: 0,
+          comment: [{ datetime: "10/3/2022 - 18:9:6", input: "Hello" }],
         },
         done
       );
@@ -81,20 +119,59 @@ describe("server testing", () => {
       .post("/comment")
       .send(testComment2)
       .set("Accept", "application/json")
-      .expect(200)
+      .expect(201)
       .expect(
         {
           id: 1,
-          comment: {
-            cmt1: "Test Comment",
-            cmt2: "Test Comment2",
-          },
+          title: "Test",
+          content: "Hello",
+          giphy: "https://www.google.com/",
+          emo1: 0,
+          emo2: 0,
+          emo3: 0,
+          comment: [
+            { datetime: "10/3/2022 - 18:9:6", input: "Hello" },
+            { datetime: "10/3/2022 - 18:9:6", input: "Hello2" },
+          ],
         },
         done
       );
   });
-
-  it("get post comments by id res with 200(exist)", (done) => {
-    request(testapp).get("/comment/1").expect(200, done);
+  it("responds to post /emo with status 200", (done) => {
+    request(testapp)
+      .post("/emo")
+      .send(testEmojiData)
+      .set("Accept", "application/json")
+      .expect(200)
+      .expect(
+        {
+          id: 1,
+          title: "Test",
+          content: "Hello",
+          giphy: "https://www.google.com/",
+          emo1: 1,
+          emo2: 0,
+          emo3: 0,
+          comment: [
+            { datetime: "10/3/2022 - 18:9:6", input: "Hello" },
+            { datetime: "10/3/2022 - 18:9:6", input: "Hello2" },
+          ],
+        },
+        done
+      );
+  });
+  it("responds to post /create with status 404", (done) => {
+    request(testapp)
+      .post("/create")
+      .send({})
+      .set("Accept", "application/json")
+      .expect(404, done);
+  });
+  it("responds to post /comment with status 404", (done) => {
+    request(testapp)
+      .post("/comment")
+      .send({ id: 1, comment: "" })
+      .set("Accept", "application/json")
+      .expect(404, done);
   });
 });

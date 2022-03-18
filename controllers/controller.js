@@ -16,6 +16,10 @@ router.post("/create", (req, res) => {
     //load all post
     let posts = loadPosts();
     const data = req.body;
+    if (Object.keys(req.body).length === 0) {
+      throw new Error("Req Body", data);
+    }
+
     //create data as obj
     const newData = model.Post.create(data);
     //add new data into all data
@@ -40,7 +44,7 @@ router.post("/comment", (req, res) => {
   let obj = data.comment;
   post[position].comment.push(obj);
   fs.writeFileSync(pjf, JSON.stringify(post), "utf-8");
-  res.status(200).send(post[position]);
+  res.status(201).send(post[position]);
 });
 
 function savePosts(posts) {
